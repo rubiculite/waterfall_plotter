@@ -4,7 +4,9 @@ Here I am building a d3.js based Waterfall Plotter widget. Waterfall plots are u
 
 ![](https://github.com/rubiculite/waterfall_plotter/blob/master/docs/pics/waterfall_plotter_with_xhairs.png)
 
-Work in progress.
+Fig. 1: Water Plotter widget showing X-hairs.
+
+# Work in progress.
 
 ## Testing
 
