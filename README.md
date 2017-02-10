@@ -14,7 +14,7 @@ Works OK in Chrome, Microsoft Edge, and Safari. It renders in Firefox, but the X
 
 ## TA-DO List
 * RFI Overlay
-* X-Hairs arrow keys bindings
-* X-Hairs touching screen implementation
+* X-Hairs arrow key bindings
+* X-Hairs touch screen implementation
 * Zoom
 * Pan 
