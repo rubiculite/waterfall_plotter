@@ -1,4 +1,4 @@
-# waterfall_plotter
+# Waterfall Plotter
 
 Work in progress.
 
