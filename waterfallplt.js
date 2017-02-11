@@ -2,6 +2,15 @@ window.addEventListener('load', function(e){
    plot = new waterfallPlot(d3.select("body"));
 }); 
 
+function toggleXHairs(){
+   if (plot.toggleCursors()) {
+      d3.select("#tgXHairs").attr("value","X-Hairs Off");
+   } else {
+      d3.select("#tgXHairs").attr("value","X-Hairs On ");
+   }
+}
+
+
 function waterfallPlot(d3_AppendToElement) {
 
    this.wf = new mkRandomWaterFallData();
@@ -80,7 +89,7 @@ function waterfallPlot(d3_AppendToElement) {
    // Main plot area xhairs
    this.gXHairs = this.gWaterfallPlotContainer.append("g").attr("class","main-xhairs").attr("transform","translate(52,"+(this.gMiniEdge+29)+")");
    (function(element,gMainPlot,xScale,yScale,iScale,iLabel,gMainEdge,gMiniEdge){
-      element.append("rect").attr("class","main-xhairs-region").attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMainEdge+1)
+      element.append("rect").attr("class","main-xhairs-region xhairs").attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMainEdge+1)
       .attr("fill","none").style("pointer-events","all")
       .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
       .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
@@ -150,7 +159,7 @@ function waterfallPlot(d3_AppendToElement) {
    // Top graph xhairs
    this.gTopXHairs = this.gWaterfallPlotContainer.append("g").attr("class","top-xhairs").attr("transform","translate(52,29)");
    (function(element,xScale,uScale,gMainEdge,gMiniEdge){
-      element.append("rect").attr("class","main-xhairs-region").attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMiniEdge)
+      element.append("rect").attr("class","main-xhairs-region xhairs").attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMiniEdge)
          .attr("fill","none").style("pointer-events","all")
          .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
          .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
@@ -182,7 +191,7 @@ function waterfallPlot(d3_AppendToElement) {
    this.gRightXHairs = this.gWaterfallPlotContainer.append("g")
       .attr("class","top-xhairs").attr("transform","translate("+(this.gMainEdge+51)+","+(this.gMiniEdge+28)+")");
    (function(element,rScale,yScale,gMainEdge,gMiniEdge){
-      element.append("rect").attr("class","main-xhairs-region").attr("x",0).attr("y",0).attr("width",gMiniEdge).attr("height",gMainEdge)
+      element.append("rect").attr("class","main-xhairs-region xhairs").attr("x",0).attr("y",0).attr("width",gMiniEdge).attr("height",gMainEdge)
       .attr("fill","none").style("pointer-events","all")
       .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
       .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
@@ -213,6 +222,17 @@ function waterfallPlot(d3_AppendToElement) {
    this.gRightXHairs.append("text").attr("class","right-y-xhairs-label").attr("x",0).attr("y",0)
       .attr("text-anchor","middle").attr("transform","translate("+(this.gMiniEdge+4)+","+(this.gMainEdge/2)+") rotate(90)")
       .text(Number(this.yScale.invert(200)).toFixed(1)).style("display","none");
+
+   this.toggleCursors = function(){
+     console.log(this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events"));
+      if (this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events")=='all') {
+         this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events",null);
+         return false;
+      } else {
+         this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events","all");
+         return true;
+      }
+   };
 };
 
 
@@ -247,6 +267,8 @@ function waterfallPlot(d3_AppendToElement) {
 
 
 function mkRandomWaterFallData () {
+
+   // main parameters
    this.xMin = 0;
    this.xMax = 200;
    this.iMin="0";
@@ -258,6 +280,18 @@ function mkRandomWaterFallData () {
    this.yMax = 800;
    this.xBins = 175; // max 256 bins
    this.yBins = 175; // max 1024 bins
+
+   // data
+   this.data = [];
+   this.dataX = [];
+   this.dataY = [];
+
+   // helper functions
+   this.xValue = function(bin) {return Number((this.xMax-this.xMin)*bin/this.xBins+this.xMin).toFixed(2);};
+   this.yValue = function(bin) {return Number((this.yMax-this.yMin)*bin/this.yBins+this.yMin).toFixed(2);};
+
+   // --------------------------------------------------------------
+   // emulation
    this.peakBds = {"min":20,"max":180,"minWidth":5,"maxWidth":20};
    this.peak = Math.random() * (this.peakBds.max - this.peakBds.min) + this.peakBds.min;
    this.peakWidth= Math.random()*(this.peakBds.maxWidth - this.peakBds.minWidth) + this.peakBds.minWidth;
@@ -269,11 +303,6 @@ function mkRandomWaterFallData () {
       }
       return Number(100*Math.random()).toFixed(2);
    };
-   this.xValue = function(bin) {return Number((this.xMax-this.xMin)*bin/this.xBins+this.xMin).toFixed(2);};
-   this.yValue = function(bin) {return Number((this.yMax-this.yMin)*bin/this.yBins+this.yMin).toFixed(2);};
-   this.data = [];
-   this.dataX = [];
-   this.dataY = [];
    this.maxDataX=0;
    this.maxDataY=0;
    for (this.col=0; this.col<this.xBins;this.col++){this.dataX[this.col]=0;}
