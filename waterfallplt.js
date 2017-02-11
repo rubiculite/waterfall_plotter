@@ -1,5 +1,12 @@
 window.addEventListener('load', function(e){
-   plot = new waterfallPlot(d3.select("body"));
+   data = [];
+   num=10;
+   for (i=0;i<num;i++) {
+      data[i] = new mkRandomWaterFallData();
+   }
+   plot = new waterfallPlot(d3.select("body"),data[0]);
+   index=0;
+   d3.select("#event").text(index+1);
 }); 
 
 function toggleXHairs(){
@@ -10,10 +17,19 @@ function toggleXHairs(){
    }
 }
 
+function update() {
+   // this is a kludge... there is a lot more work to do here...
+   d3.select("svg").remove();
+   d3.select("#tgXHairs").attr("value","X-Hairs Off");
+   index = ++index % num;
+   plot = new waterfallPlot(d3.select("body"),data[index]);
+   d3.select("#event").text(index+1);
+}
 
-function waterfallPlot(d3_AppendToElement) {
 
-   this.wf = new mkRandomWaterFallData();
+function waterfallPlot(d3_AppendToElement,data) {
+
+   this.wf = data;
 
    // geometric parameters (pixels)
    this.gMainEdge = 400; // Main plot area is square 
@@ -224,7 +240,6 @@ function waterfallPlot(d3_AppendToElement) {
       .text(Number(this.yScale.invert(200)).toFixed(1)).style("display","none");
 
    this.toggleCursors = function(){
-     console.log(this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events"));
       if (this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events")=='all') {
          this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events",null);
          return false;
