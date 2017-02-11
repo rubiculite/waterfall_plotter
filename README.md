@@ -6,7 +6,7 @@ Here I am building a d3.js based Waterfall Plotter widget. Waterfall plots are u
 
 Fig. 1: Waterfall Plotter widget showing X-hairs.
 
-# Work in progress
+# Work in Progress
 
 ## Testing
 
