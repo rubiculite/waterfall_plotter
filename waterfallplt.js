@@ -1,6 +1,6 @@
 window.addEventListener('load', function(e){
    data = [];
-   num=10;
+   num=25;
    for (i=0;i<num;i++) {
       data[i] = new mkRandomWaterFallData();
    }
@@ -18,11 +18,9 @@ function toggleXHairs(){
 }
 
 function update() {
-   // this is a kludge... there is a lot more work to do here...
-   d3.select("svg").remove();
    d3.select("#tgXHairs").attr("value","X-Hairs Off");
    index = ++index % num;
-   plot = new waterfallPlot(d3.select("body"),data[index]);
+   plot.update(data[index]);
    d3.select("#event").text(index+1);
 }
 
@@ -239,6 +237,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       .attr("text-anchor","middle").attr("transform","translate("+(this.gMiniEdge+4)+","+(this.gMainEdge/2)+") rotate(90)")
       .text(Number(this.yScale.invert(200)).toFixed(1)).style("display","none");
 
+   // Function to toggle x-hairs on/off.
    this.toggleCursors = function(){
       if (this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events")=='all') {
          this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events",null);
@@ -248,6 +247,30 @@ function waterfallPlot(d3_AppendToElement,data) {
          return true;
       }
    };
+
+   // Function to update waterfall plot data areas (i.e., it assumes no scale changes).
+   this.update = function (wf) {
+      // Update main plot area
+      this.gMainPlot.selectAll("rect").data(wf.data).style("fill",function(d){return d3.rgb(d.jy,d.jy,d.jy).toString();});
+
+      // Update top plot area
+      var topLineFunc = (function (xScale,uScale) {
+         return d3.line().x(function(d,i){return xScale(wf.xValue(i));}).y(function(d,i){return uScale(d);})
+         .curve(d3.curveLinear)})(this.xScale,this.uScale);
+      var topPath = this.gTopPlot.select(".xy-top-plot");
+      topPath.select("path").remove();
+      topPath.append("path").attr("d",topLineFunc(wf.dataX)).attr("stroke","black").attr("stroke-width",1).attr("fill","none");
+
+      // Update right plot area
+      var rightLineFunc = (function(yScale,rScale) {
+         return d3.line().x(function(d,i){return rScale(d);}).y(function(d,i){return yScale(wf.yValue(i));})
+         .curve(d3.curveLinear);
+      })(this.yScale,this.rScale);
+      var rightPath = this.gRightPlot.select(".xy-right-plot");
+      rightPath.select("path").remove();
+      rightPath.append("path").attr("d",rightLineFunc(wf.dataY)).attr("stroke","black").attr("stroke-width",1).attr("fill","none");
+   }
+
 };
 
 
