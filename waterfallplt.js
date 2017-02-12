@@ -10,7 +10,7 @@ window.addEventListener('load', function(e){
 }); 
 
 function toggleXHairs(){
-   if (plot.toggleCursors()) {
+   if (plot.toggleXHairs()) {
       d3.select("#tgXHairs").attr("value","X-Hairs Off");
    } else {
       d3.select("#tgXHairs").attr("value","X-Hairs On ");
@@ -18,9 +18,9 @@ function toggleXHairs(){
 }
 
 function update() {
-   d3.select("#tgXHairs").attr("value","X-Hairs Off");
    index = ++index % num;
    plot.update(data[index]);
+   d3.select("#tgXHairs").attr("value",function(){return "X-Hairs "+((plot.isXHairsOn()) ? "Off" : "On ");});
    d3.select("#event").text(index+1);
 }
 
@@ -251,7 +251,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       .text(Number(this.yScale.invert(200)).toFixed(1)).style("display","none");
 
    // Function to toggle x-hairs on/off.
-   this.toggleCursors = function(){
+   this.toggleXHairs = function(){
       if (this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events")=='all') {
          this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events",null);
          return false;
@@ -259,6 +259,14 @@ function waterfallPlot(d3_AppendToElement,data) {
          this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events","all");
          return true;
       }
+   };
+
+   // Function to get x-hairs on/off state.
+   this.isXHairsOn = function() {
+      if (this.gWaterfallPlotContainer.selectAll(".xhairs").style("pointer-events")=='all') {
+         return true;
+      }
+      return false;
    };
 
    // Function to update waterfall plot data areas (i.e., it assumes no scale changes).
