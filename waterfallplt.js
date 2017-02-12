@@ -113,16 +113,16 @@ function waterfallPlot(d3_AppendToElement,data) {
          var yPixels = coords[1];
          var x = Number(xScale.invert(xPixels)).toFixed(1);
          var y = Number(yScale.invert(yPixels)).toFixed(1);
-         element.selectAll(".main-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
-         element.selectAll(".main-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
-         element.select(".main-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
-         element.select(".main-y-xhairs-label")
-            .attr("transform","translate("+(gMainEdge+gMiniEdge+5)+","+yPixels+") rotate(90)").text(y>0?y:-y);
 
-         // This is for setting the value of the intensity -- tricky...
+         // Update x-hairs and annotation.
          gMainPlot.select("g.xy-main-plot").selectAll("rect")
             .filter(function(d){
                if (xScale(d.x)<=xPixels && xPixels < xScale(d.x)+2 && yScale(d.y)<=yPixels && yPixels < yScale(d.y)+2) {
+
+                  // OK, we found the rectangle under the mouse arrow, now we can get intensity value to
+                  // annotate our x-hairs. That said, we must make sure the annotation remains in the
+                  // main plot area...
+                  //
                   var gXHairsZLabel = element.select(".main-z-xhairs");
                   if (xPixels <= gMainEdge/2 && yPixels >= gMainEdge/2) {
                      gXHairsZLabel.text(Number(iScale(d.jy)).toFixed(2)+" "+iLabel).attr("x",xPixels+10).attr("y",yPixels-10)
@@ -137,6 +137,19 @@ function waterfallPlot(d3_AppendToElement,data) {
                      gXHairsZLabel.text(Number(iScale(d.jy)).toFixed(2)+" "+iLabel).attr("x",xPixels-10).attr("y",yPixels-10)
                         .attr("text-anchor","end").attr("alignment-baseline",null);
                   }
+
+                 // NB: The follow updates must be done within this if-block; otherwise, the intensiy
+                 // annotation (above) will lag.
+
+                 // OK, let's update the rest of the annotation now...
+                 element.select(".main-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
+                 element.select(".main-y-xhairs-label")
+                    .attr("transform","translate("+(gMainEdge+gMiniEdge+5)+","+yPixels+") rotate(90)").text(y>0?y:-y);
+
+                 // Finally, we update the x-hairs...
+                 element.selectAll(".main-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
+                 element.selectAll(".main-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
+
                   return true;
                }
                return false;
