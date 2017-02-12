@@ -33,7 +33,7 @@ function waterfallPlot(d3_AppendToElement,data) {
    this.gMainEdge = 400; // Main plot area is square 
    this.gMiniEdge = this.gMainEdge/4; // Small-edge length of side plots
    this.gXBoxEdge = this.gMainEdge/this.wf.xBins; // Width of main plot area boxel
-   this.gYBoxEdge = this.gMainEdge/this.wf.yBins; // Heigth of main area boxel 
+   this.gYBoxEdge = this.gMainEdge/this.wf.yBins; // Height of main area boxel 
 
    // svg container for waterfall plot
    this.svgContainer = d3_AppendToElement.append("svg").attr("width",this.gMainEdge+this.gMiniEdge+75).attr("height",this.gMainEdge+this.gMiniEdge+75);
@@ -102,7 +102,7 @@ function waterfallPlot(d3_AppendToElement,data) {
 
    // Main plot area xhairs
    this.gXHairs = this.gWaterfallPlotContainer.append("g").attr("class","main-xhairs").attr("transform","translate(52,"+(this.gMiniEdge+29)+")");
-   (function(element,gMainPlot,xScale,yScale,iScale,iLabel,gMainEdge,gMiniEdge){
+   (function(element,gMainPlot,xScale,yScale,iScale,iLabel,gMainEdge,gMiniEdge,gXBoxEdge,gYBoxEdge){
       element.append("rect").attr("class","main-xhairs-region xhairs").attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMainEdge+1)
       .attr("fill","none").style("pointer-events","all")
       .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
@@ -117,7 +117,7 @@ function waterfallPlot(d3_AppendToElement,data) {
          // Update x-hairs and annotation.
          gMainPlot.select("g.xy-main-plot").selectAll("rect")
             .filter(function(d){
-               if (xScale(d.x)<=xPixels && xPixels < xScale(d.x)+2 && yScale(d.y)<=yPixels && yPixels < yScale(d.y)+2) {
+               if (xScale(d.x)<=xPixels && xPixels <= xScale(d.x)+gXBoxEdge && yScale(d.y)-gYBoxEdge<=yPixels && yPixels <= yScale(d.y)) {
 
                   // OK, we found the rectangle under the mouse arrow, now we can get intensity value to
                   // annotate our x-hairs. That said, we must make sure the annotation remains in the
@@ -162,7 +162,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       //  .on('→', moveMainXHairs(d3.mouse(this)[0]+2,0))
       //  .on('↓', moveMainXHairs(0,d3.mouse(this)[1]+2))
       //);
-   })(this.gXHairs,this.gMainPlot,this.xScale,this.yScale,this.iScale,this.wf.iLabel,this.gMainEdge,this.gMiniEdge); 
+   })(this.gXHairs,this.gMainPlot,this.xScale,this.yScale,this.iScale,this.wf.iLabel,this.gMainEdge,this.gMiniEdge,this.gXBoxEdge,this.gYBoxEdge); 
    this.gXHairs.append("line").attr("class","main-x-xhairs")
       .attr("x1",this.gMainEdge/2).attr("y1",0).attr("x2",this.gMainEdge/2).attr("y2",this.gMainEdge)
       .attr("stroke","yellow").attr("stroke-width",1).style("display","none");
@@ -337,8 +337,8 @@ function mkRandomWaterFallData () {
    this.iLabel="Jy";
    this.yMin = 0;
    this.yMax = 800;
-   this.xBins = 175; // max 256 bins
-   this.yBins = 175; // max 1024 bins
+   this.xBins = 3; // max 256 bins
+   this.yBins = 3; // max 1024 bins
 
    // data
    this.data = [];
