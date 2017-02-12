@@ -73,13 +73,13 @@ function waterfallPlot(d3_AppendToElement,data) {
    this.gTopPlot.append("line").attr("x1",this.gMainEdge).attr("y1",1).attr("x2",this.gMainEdge).attr("y2",this.gMiniEdge)
       .attr("style","stroke:black;stroke-width:1");
    this.gTopPlot.append("text").attr("x",0).attr("y",0).attr("transform","translate(-7,"+((this.gMiniEdge+5)/2)+") rotate(-90)").text(this.wf.iLabel);
-   (function(element,wf,xScale,uScale){
-      var topLineFunc = d3.line().x(function(d,i){return xScale(wf.xValue(i));}).y(function(d,i){return uScale(d);})
+   (function(element,wf,xScale,uScale,gXBoxEdge){
+      var topLineFunc = d3.line().x(function(d,i){return xScale(wf.xValue(i))+gXBoxEdge/2;}).y(function(d,i){return uScale(d);})
          .curve(d3.curveLinear);
       element.append("g").attr("class","xy-top-plot").attr("transform","translate(1,0)")
          .append("path").attr("d",topLineFunc(wf.dataX))
          .attr("stroke","black").attr("stroke-width",1).attr("fill","none");
-   })(this.gTopPlot,this.wf,this.xScale,this.uScale);
+   })(this.gTopPlot,this.wf,this.xScale,this.uScale,this.gXBoxEdge);
 
    // Right portion of waterfall plot
    this.gRightPlot = this.gWaterfallPlotContainer.append("g").attr("class","wf-right-plot")
@@ -92,13 +92,13 @@ function waterfallPlot(d3_AppendToElement,data) {
    this.gRightPlot.append("line").attr("x1",0).attr("y1",this.gMainEdge).attr("x2",this.gMiniEdge+1).attr("y2",this.gMainEdge)
       .attr("style","stroke:black;stroke-width:1");
    this.gRightPlot.append("text").attr("x",(this.gMiniEdge-5)/2).attr("y",-5).text(this.wf.iLabel);
-   (function(element,wf,rScale,yScale){
-      var rightLineFunc = d3.line().x(function(d,i){return rScale(d);}).y(function(d,i){return yScale(wf.yValue(i));})
+   (function(element,wf,rScale,yScale,gYBoxEdge){
+      var rightLineFunc = d3.line().x(function(d,i){return rScale(d);}).y(function(d,i){return yScale(wf.yValue(i))-gYBoxEdge/2;})
          .curve(d3.curveLinear);
       element.append("g").attr("class","xy-right-plot").attr("transform","translate(0,-1)")
          .append("path").attr("d",rightLineFunc(wf.dataY))
          .attr("stroke","black").attr("stroke-width",1).attr("fill","none");
-   })(this.gRightPlot,this.wf,this.rScale,this.yScale);
+   })(this.gRightPlot,this.wf,this.rScale,this.yScale,this.gYBoxEdge);
 
    // Main plot area xhairs
    this.gXHairs = this.gWaterfallPlotContainer.append("g").attr("class","main-xhairs").attr("transform","translate(52,"+(this.gMiniEdge+29)+")");
@@ -275,18 +275,18 @@ function waterfallPlot(d3_AppendToElement,data) {
       this.gMainPlot.selectAll("rect").data(wf.data).style("fill",function(d){return d3.rgb(d.jy,d.jy,d.jy).toString();});
 
       // Update top plot area
-      var topLineFunc = (function (xScale,uScale) {
-         return d3.line().x(function(d,i){return xScale(wf.xValue(i));}).y(function(d,i){return uScale(d);})
-         .curve(d3.curveLinear)})(this.xScale,this.uScale);
+      var topLineFunc = (function (xScale,uScale,gXBoxEdge) {
+         return d3.line().x(function(d,i){return xScale(wf.xValue(i))+gXBoxEdge/2;}).y(function(d,i){return uScale(d);})
+         .curve(d3.curveLinear)})(this.xScale,this.uScale,this.gXBoxEdge);
       var topPath = this.gTopPlot.select(".xy-top-plot");
       topPath.select("path").remove();
       topPath.append("path").attr("d",topLineFunc(wf.dataX)).attr("stroke","black").attr("stroke-width",1).attr("fill","none");
 
       // Update right plot area
-      var rightLineFunc = (function(yScale,rScale) {
-         return d3.line().x(function(d,i){return rScale(d);}).y(function(d,i){return yScale(wf.yValue(i));})
+      var rightLineFunc = (function(yScale,rScale,gYBoxEdge) {
+         return d3.line().x(function(d,i){return rScale(d);}).y(function(d,i){return yScale(wf.yValue(i))-gYBoxEdge/2;})
          .curve(d3.curveLinear);
-      })(this.yScale,this.rScale);
+      })(this.yScale,this.rScale,this.gYBoxEdge);
       var rightPath = this.gRightPlot.select(".xy-right-plot");
       rightPath.select("path").remove();
       rightPath.append("path").attr("d",rightLineFunc(wf.dataY)).attr("stroke","black").attr("stroke-width",1).attr("fill","none");
@@ -337,8 +337,8 @@ function mkRandomWaterFallData () {
    this.iLabel="Jy";
    this.yMin = 0;
    this.yMax = 800;
-   this.xBins = 3; // max 256 bins
-   this.yBins = 3; // max 1024 bins
+   this.xBins = 175; // max 256 bins
+   this.yBins = 175; // max 1024 bins
 
    // data
    this.data = [];
