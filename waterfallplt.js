@@ -113,17 +113,17 @@ function waterfallPlot(d3_AppendToElement,data) {
          var yPixels = coords[1];
          var x = Number(xScale.invert(xPixels)).toFixed(1);
          var y = Number(yScale.invert(yPixels)).toFixed(1);
-         element.selectAll(".main-x-xhairs").transition().duration(10).attr("x1",xPixels).attr("x2",xPixels);
-         element.selectAll(".main-y-xhairs").transition().duration(10).attr("y1",yPixels).attr("y2",yPixels);
-         element.select(".main-x-xhairs-label").transition().duration(10).attr("x",xPixels).text(x>0?x:-x);
-         element.select(".main-y-xhairs-label").transition().duration(10)
+         element.selectAll(".main-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
+         element.selectAll(".main-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
+         element.select(".main-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
+         element.select(".main-y-xhairs-label")
             .attr("transform","translate("+(gMainEdge+gMiniEdge+5)+","+yPixels+") rotate(90)").text(y>0?y:-y);
 
          // This is for setting the value of the intensity -- tricky...
          gMainPlot.select("g.xy-main-plot").selectAll("rect")
             .filter(function(d){
                if (xScale(d.x)<=xPixels && xPixels < xScale(d.x)+2 && yScale(d.y)<=yPixels && yPixels < yScale(d.y)+2) {
-                  var gXHairsZLabel = element.select(".main-z-xhairs").transition().duration(10);
+                  var gXHairsZLabel = element.select(".main-z-xhairs");
                   if (xPixels <= gMainEdge/2 && yPixels >= gMainEdge/2) {
                      gXHairsZLabel.text(Number(iScale(d.jy)).toFixed(2)+" "+iLabel).attr("x",xPixels+10).attr("y",yPixels-10)
                         .attr("text-anchor",null).attr("alignment-baseline",null);
@@ -183,10 +183,10 @@ function waterfallPlot(d3_AppendToElement,data) {
             var yPixels = coords[1];
             var x = Number(xScale.invert(xPixels)).toFixed(1);
             var y = Number(uScale.invert(yPixels)).toFixed(1);
-            element.selectAll(".top-x-xhairs").transition().duration(10).attr("x1",xPixels).attr("x2",xPixels);
-            element.select(".top-y-xhairs").transition().duration(10).attr("y1",yPixels).attr("y2",yPixels);
-            element.select(".top-x-xhairs-label").transition().duration(10).attr("x",xPixels).text(x>0?x:-x);
-            element.select(".top-y-xhairs-label").transition().duration(10).attr("y",yPixels).text(y>0?y:-y);
+            element.selectAll(".top-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
+            element.select(".top-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
+            element.select(".top-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
+            element.select(".top-y-xhairs-label").attr("y",yPixels).text(y>0?y:-y);
          });
    })(this.gTopXHairs,this.xScale,this.uScale,this.gMainEdge,this.gMiniEdge);
    this.gTopXHairs.append("line").attr("class","top-x-xhairs").attr("x1",this.gMainEdge/2).attr("y1",0).attr("x2",this.gMainEdge/2).attr("y2",this.gMiniEdge)
@@ -215,10 +215,10 @@ function waterfallPlot(d3_AppendToElement,data) {
          var yPixels = coords[1];
          var x = Number(rScale.invert(xPixels)).toFixed(1);
          var y = Number(yScale.invert(yPixels)).toFixed(1);
-         element.select(".right-x-xhairs").transition().duration(10).attr("x1",xPixels).attr("x2",xPixels);
-         element.selectAll(".right-y-xhairs").transition().duration(10).attr("y1",yPixels).attr("y2",yPixels);
-         element.select(".right-x-xhairs-label").transition().duration(10).attr("x",xPixels).text(x>0?x:-x);
-         element.select(".right-y-xhairs-label").transition().duration(10)
+         element.select(".right-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
+         element.selectAll(".right-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
+         element.select(".right-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
+         element.select(".right-y-xhairs-label")
            .attr("transform","translate("+(gMiniEdge+4)+","+yPixels+") rotate(90)").text(y>0?y:-y);
        });
    })(this.gRightXHairs,this.rScale,this.yScale,this.gMainEdge,this.gMiniEdge);
