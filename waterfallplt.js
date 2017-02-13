@@ -351,35 +351,98 @@ function mkRandomWaterFallData () {
 
    // --------------------------------------------------------------
    // emulation
-   this.peakBds = {"min":20,"max":180,"minWidth":5,"maxWidth":20};
-   this.peak = Math.random() * (this.peakBds.max - this.peakBds.min) + this.peakBds.min;
-   this.peakWidth= Math.random()*(this.peakBds.maxWidth - this.peakBds.minWidth) + this.peakBds.minWidth;
-   this.singal = function (x) {
-      if (this.peak-this.peakWidth/2 < x && x <= this.peak ) {
-        return Number((1-Math.random()/5)*Math.min(255,510*(x-(this.peak-this.peakWidth/2))/this.peakWidth+100*Math.random())).toFixed(2);
-      } else if (this.peak < x && x < this.peak+this.peakWidth/2) {
-        return Number((1-Math.random()/5)*Math.min(255,-510*(x-this.peak)/this.peakWidth+255+100*Math.random())).toFixed(2);
+
+   // This routines emulates how the data would come after it has been upacked.
+   this.iMap = (function (xBins,xMin,xMax,yBins,yMin,yMax) {
+      var data = [];
+      var xValue = function(bin) {return Number((xMax-xMin)*bin/xBins+xMin).toFixed(2);};
+      var yValue = function(bin) {return Number((yMax-yMin)*bin/yBins+yMin).toFixed(2);};
+      var peakBds = {"min":20,"max":180,"minWidth":5,"maxWidth":20};
+      var peak = Math.random() * (peakBds.max - peakBds.min) + peakBds.min;
+      var peakWidth= Math.random()*(peakBds.maxWidth - peakBds.minWidth) + peakBds.minWidth;
+      var singal = function (x) {
+         if (peak-peakWidth/2 < x && x <= peak ) {
+           return Number((1-Math.random()/5)*Math.min(255,510*(x-(peak-peakWidth/2))/peakWidth+100*Math.random())).toFixed(2);
+         } else if (peak < x && x < peak+peakWidth/2) {
+           return Number((1-Math.random()/5)*Math.min(255,-510*(x-peak)/peakWidth+255+100*Math.random())).toFixed(2);
+         }
+         return Number(100*Math.random()).toFixed(2);
+      };
+      for (var row=0; row < yBins; row++) {
+         for (var col=0; col < xBins; col++) {
+            data[row*xBins+col] = {"x": xValue(col),"y": yValue(row),"jy": singal(xValue(col))};
+         }
       }
-      return Number(100*Math.random()).toFixed(2);
-   };
-   this.maxDataX=0;
-   this.maxDataY=0;
-   for (this.col=0; this.col<this.xBins;this.col++){this.dataX[this.col]=0;}
-   for (this.row=0; this.row<this.yBins;this.row++){this.dataY[this.row]=0;}
-   for (this.row=0; this.row < this.yBins; this.row++) {
-      for (this.col=0; this.col < this.xBins; this.col++) {
-         this.idx = this.row*this.xBins+this.col;
-         this.data[this.idx] = {"x": this.xValue(this.col),"y": this.yValue(this.row),"jy": this.singal(this.xValue(this.col))};
-         this.dataX[this.col]+=parseFloat(this.data[this.idx].jy);
-         this.dataY[this.row]+=parseFloat(this.data[this.idx].jy);
+      return {"xBins":xBins, "xMin":xMin, "xMax":xMax, "yBins":yBins, "yMin":yMin, "yMax":yMax, "data":data};
+   })(this.xBins,this.xMin,this.xMax,this.yBins,this.yMin,this.yMax);
+// TA-DO: Compatification Code: i.e., map 1024x256 -> 175x175
+//     (256,this.xMin,this.xMax,1024,this.yMin,this.yMax);
+//
+//   this.compactify = function (iMap,tgXBins,tgYBins) {
+//      if (iMap.xBins <= tgXBins || iMap.yBins <= tgYBins) {return iMap;}
+//      var tgCol = function (col) {return Math.floor((tgXBins-1)*col/(iMap.xBins-1));}
+//      var tgRow = function (row) {return Math.floor((tgYBins-1)*col/(iMap.yBins-1));}
+//      var xValue = function(bin) {return Number((iMap.xMax-iMap.xMin)*bin/tgXBins+iMap.xMin).toFixed(2);};
+//      var yValue = function(bin) {return Number((iMap.yMax-iMap.yMin)*bin/tgYBins+iMap.yMin).toFixed(2);};
+//      var tgData = [];
+//      var cnt = [];
+//      for (var row=0; row < tgYBins; row++) {
+//         for (var col=0; col < tgXBins; col++) {
+//            tgData[row*tgXBins+col] = {"x": xValue(col),"y": yValue(row),"jy": 0};
+//            cnt[row*tgXBins+col]=0;
+//         }
+//      }
+//      for (var row=0; row < iMap.yBins; row++) {
+//         for (var col=0; col < iMap.xBins; col++) {
+//            tgData[tgRow(row)*tgXBins+tgCol(col)].jy += iMap[row*iMap.xBins+col];
+//            cnt[tgRow(row)*tgXBins+tgCol(col)]+=1;
+//         }
+//      }
+//      for (var row=0; row < tgYBins; row++) {
+//         for (var col=0; col < tgXBins; col++) {
+//            tgData[row*tgXBins+col].jy /= (cnt[row*tgXBins+col]>0) ? cnt[row*tgXBins+col] : 1;
+//         }
+//      }
+//      return tgData; 
+//   }
+//
+//   this.data=this.compactify(this.iMap.data,this.xBins,this.yBins);
+
+   // --------------------------------------------------------------
+   // Display data...
+
+   // Main plot area
+   this.data=this.iMap.data;
+
+   // Top plot area
+   this.dataX = (function (xBins,yBins,data) {
+      var maxDataX=0;
+      var dataX=[];
+      for (var col=0; col<xBins;col++){dataX[col]=0;}
+      for (row=0; row < yBins; row++) {
+         for (col=0; col < xBins; col++) {
+            dataX[col]+=parseFloat(data[row*xBins+col].jy);
+         }
       }
-   }
-   for (this.col=0; this.col<this.xBins;this.col++){if(this.dataX[this.col]>this.maxDataX){this.maxDataX=this.dataX[this.col];}}
-   for (this.row=0; this.row<this.yBins;this.row++){if(this.dataY[this.row]>this.maxDataY){this.maxDataY=this.dataY[this.row];}}
-   this.maxDataX*=(1+2*Math.random()/3);
-   this.maxDataY*=(1+2*Math.random()/3);
-   if (this.maxDataX>0) {for (var col=0; col<this.xBins;col++){this.dataX[col]=Number(this.dataX[col]/this.maxDataX).toFixed(3);}}
-   if (this.maxDataY>0) {for (var row=0; row<this.yBins;row++){this.dataY[row]=Number(this.dataY[row]/this.maxDataY).toFixed(3);}}
-   this.maxDataX=Number(this.maxDataX).toFixed(2);
-   this.maxDataY=Number(this.maxDataY).toFixed(2);
+      for (col=0; col<xBins;col++){if(dataX[col]>maxDataX){maxDataX=dataX[col];}}
+      maxDataX*=(1+2*Math.random()/3);
+      if (maxDataX>0) {for (col=0; col<xBins;col++){dataX[col]=Number(dataX[col]/maxDataX).toFixed(3);}}
+      return dataX;
+   })(this.xBins,this.yBins,this.data);
+
+   // Right plot area
+   this.dataY = (function (xBins,yBins,data) {
+      var maxDataY=0;
+      var dataY=[];
+      for (var row=0; row<yBins;row++){dataY[row]=0;}
+      for (row=0; row < yBins; row++) {
+         for (col=0; col < xBins; col++) {
+            dataY[row]+=parseFloat(data[row*xBins+col].jy);
+         }
+      }
+      for (row=0; row<yBins;row++){if(dataY[row]>maxDataY){maxDataY=dataY[row];}}
+      maxDataY*=(1+2*Math.random()/3);
+      if (maxDataY>0) {for (row=0; row<yBins;row++){dataY[row]=Number(dataY[row]/maxDataY).toFixed(3);}}
+      return dataY;
+   })(this.xBins,this.yBins,this.data);
 }
