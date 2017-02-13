@@ -295,8 +295,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       this.wf = wf;
    }
 
-   this.wf.rfiMaskOn = false;
-
+   // Function to toogle rfi mask on/off.
    this.toggleRfiMask = function() {
       if (this.wf.rfiMaskOn != true) { 
          this.gMainPlot.selectAll("rect").data(this.wf.data).style("fill",function(d){return (d.mask) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
@@ -308,6 +307,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       return this.wf.rfiMaskOn;
    }
 
+   // Function to get rif mask on/off state.
    this.isRfiMaskOn = function() {
       return this.wf.rfiMaskOn;
    }
