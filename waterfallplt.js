@@ -1,3 +1,4 @@
+// Copyright 2017 Dr. Michelle M. M. Boyce
 window.addEventListener('load', function(e){
    data = [];
    num=25;
