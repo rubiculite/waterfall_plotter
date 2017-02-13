@@ -12,8 +12,18 @@ Fig. 1: Waterfall Plotter widget showing X-hairs.
 
 Works OK in Chrome, Microsoft Edge, and Safari. It renders in Firefox, but the X-Hairs do not function.
 
+## Features
+* Fast Data Load
+* Linear Intensity Scaling
+* Mouse-over X-Hairs
+* X-Hairs On/Off
+* RFI On/Off
+
 ## TA-DO List
-* RFI Overlay
+* Thumb Nail
+* Log Intensity Scaling
+* Intensity Cut-Off
+* Intensity Filter Window
 * X-Hairs arrow key bindings
 * X-Hairs touch screen implementation
 * Zoom

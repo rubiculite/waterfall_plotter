@@ -10,17 +10,18 @@ window.addEventListener('load', function(e){
 }); 
 
 function toggleXHairs(){
-   if (plot.toggleXHairs()) {
-      d3.select("#tgXHairs").attr("value","X-Hairs Off");
-   } else {
-      d3.select("#tgXHairs").attr("value","X-Hairs On ");
-   }
+   d3.select("#tgXHairs").attr("value","X-Hairs "+((plot.toggleXHairs()) ? "Off" : "On "));
+}
+
+function toggleRfiMask() {
+   d3.select("#rfiMask").attr("value","RFI Mask "+((plot.toggleRfiMask())? "Off" : "On "));
 }
 
 function update() {
    index = ++index % num;
    plot.update(data[index]);
-   d3.select("#tgXHairs").attr("value",function(){return "X-Hairs "+((plot.isXHairsOn()) ? "Off" : "On ");});
+   d3.select("#tgXHairs").attr("value","X-Hairs "+((plot.isXHairsOn()) ? "Off" : "On "));
+   d3.select("#rfiMask").attr("value","RFI Mask "+((plot.isRfiMaskOn())? "Off" : "On "));
    d3.select("#event").text(index+1);
 }
 
@@ -60,7 +61,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       element.append("g").attr("class","xy-main-plot").attr("transform","translate(26,"+(-gYBoxEdge)+")")
          .selectAll("rect").data(wf.data).enter().append("rect").attr("width",gXBoxEdge).attr("height",gYBoxEdge)
          .attr("x",function(d){return xScale(d.x);}).attr("y",function(d){return yScale(d.y);})
-         .style("fill",function(d){return d3.rgb(d.jy,d.jy,d.jy).toString();});
+         .style("fill",function(d){return (d.mask && wf.rfiMaskOn) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
    })(this.gMainPlot,this.xScale,this.yScale,this.wf,this.gXBoxEdge,this.gYBoxEdge);
 
    // Top portion of waterfall plot
@@ -272,7 +273,7 @@ function waterfallPlot(d3_AppendToElement,data) {
    // Function to update waterfall plot data areas (i.e., it assumes no scale changes).
    this.update = function (wf) {
       // Update main plot area
-      this.gMainPlot.selectAll("rect").data(wf.data).style("fill",function(d){return d3.rgb(d.jy,d.jy,d.jy).toString();});
+      this.gMainPlot.selectAll("rect").data(wf.data).style("fill",function(d){return (d.mask && wf.rfiMaskOn) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
 
       // Update top plot area
       var topLineFunc = (function (xScale,uScale,gXBoxEdge) {
@@ -290,8 +291,26 @@ function waterfallPlot(d3_AppendToElement,data) {
       var rightPath = this.gRightPlot.select(".xy-right-plot");
       rightPath.select("path").remove();
       rightPath.append("path").attr("d",rightLineFunc(wf.dataY)).attr("stroke","black").attr("stroke-width",1).attr("fill","none");
+
+      this.wf = wf;
    }
 
+   this.wf.rfiMaskOn = false;
+
+   this.toggleRfiMask = function() {
+      if (this.wf.rfiMaskOn != true) { 
+         this.gMainPlot.selectAll("rect").data(this.wf.data).style("fill",function(d){return (d.mask) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
+         this.wf.rfiMaskOn = true;
+      } else {
+         this.gMainPlot.selectAll("rect").data(this.wf.data).style("fill",function(d){return d3.rgb(d.jy,d.jy,d.jy).toString();});
+         this.wf.rfiMaskOn = false;
+      }
+      return this.wf.rfiMaskOn;
+   }
+
+   this.isRfiMaskOn = function() {
+      return this.wf.rfiMaskOn;
+   }
 };
 
 
@@ -357,20 +376,41 @@ function mkRandomWaterFallData () {
       var data = [];
       var xValue = function(bin) {return Number((xMax-xMin)*bin/xBins+xMin).toFixed(2);};
       var yValue = function(bin) {return Number((yMax-yMin)*bin/yBins+yMin).toFixed(2);};
-      var peakBds = {"min":20,"max":180,"minWidth":5,"maxWidth":20};
-      var peak = Math.random() * (peakBds.max - peakBds.min) + peakBds.min;
-      var peakWidth= Math.random()*(peakBds.maxWidth - peakBds.minWidth) + peakBds.minWidth;
-      var singal = function (x) {
-         if (peak-peakWidth/2 < x && x <= peak ) {
+
+      // Signal peak and noise generator
+      var peakBds = {"min":20,"max":180,"minWidth":5,"maxWidth":20}; // peak parameterss
+      var peak = Math.random() * (peakBds.max - peakBds.min) + peakBds.min; // random peak height
+      var peakWidth= Math.random()*(peakBds.maxWidth - peakBds.minWidth) + peakBds.minWidth; // random peak width
+      var singal = function (x) { // peak/noise signal func.
+         if (peak-peakWidth/2 < x && x <= peak ) {      // lhs of peak
            return Number((1-Math.random()/5)*Math.min(255,510*(x-(peak-peakWidth/2))/peakWidth+100*Math.random())).toFixed(2);
-         } else if (peak < x && x < peak+peakWidth/2) {
+         } else if (peak < x && x < peak+peakWidth/2) { // rhs of peak
            return Number((1-Math.random()/5)*Math.min(255,-510*(x-peak)/peakWidth+255+100*Math.random())).toFixed(2);
          }
-         return Number(100*Math.random()).toFixed(2);
+         return Number(100*Math.random()).toFixed(2);  // random noise
       };
+
+      // rfi mask
+      var bandPars = {"spread":0.375, "minLines": 2, "maxLines": 15, "dither":0.75};
+      var lines = Math.round(Math.random()*(bandPars.maxLines - bandPars.minLines) + bandPars.minLines);
+      var thresh = Math.round(Math.random()*(1-bandPars.spread)*yBins);
+      var stripes = (function(){
+         var stripes=[]; 
+         for (var i=0;i<lines;i++) {stripes[i]=Math.round(Math.random()*bandPars.spread*yBins+thresh);}
+         return stripes
+      })();
+      var rfiMask = function(col) {
+         for (var i=0;i<lines;i++) {
+            if (col == stripes[i]) {
+               return (Math.random() < bandPars.dither) ? 1 : 0;
+            }
+         }
+         return 0;
+      }
+
       for (var row=0; row < yBins; row++) {
          for (var col=0; col < xBins; col++) {
-            data[row*xBins+col] = {"x": xValue(col),"y": yValue(row),"jy": singal(xValue(col))};
+            data[row*xBins+col] = {"x": xValue(col),"y": yValue(row),"jy": singal(xValue(col)), "mask": rfiMask(row)};
          }
       }
       return {"xBins":xBins, "xMin":xMin, "xMax":xMax, "yBins":yBins, "yMin":yMin, "yMax":yMax, "data":data};
@@ -413,6 +453,7 @@ function mkRandomWaterFallData () {
 
    // Main plot area
    this.data=this.iMap.data;
+   this.rfiMaskOn = false;
 
    // Top plot area
    this.dataX = (function (xBins,yBins,data) {
