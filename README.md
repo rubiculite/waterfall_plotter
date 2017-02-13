@@ -26,5 +26,6 @@ Works OK in Chrome, Microsoft Edge, and Safari. It renders in Firefox, but the X
 * Intensity Filter Window
 * X-Hairs arrow key bindings
 * X-Hairs touch screen implementation
-* Zoom
+* Zoom (Requires code restructuring... almost there!)
 * Pan 
+* Separate Out the Random Data Generator from the Widget Code.
