@@ -1,31 +1,4 @@
 // Copyright (c) 2017 Dr. Michelle M. M. Boyce
-window.addEventListener('load', function(e){
-   data = [];
-   num=25;
-   for (i=0;i<num;i++) {
-      data[i] = new mkRandomWaterFallData();
-   }
-   plot = new waterfallPlot(d3.select("body"),data[0]);
-   index=0;
-   d3.select("#event").text(index+1);
-}); 
-
-function toggleXHairs(){
-   d3.select("#tgXHairs").attr("value","X-Hairs "+((plot.toggleXHairs()) ? "Off" : "On "));
-}
-
-function toggleRfiMask() {
-   d3.select("#rfiMask").attr("value","RFI Mask "+((plot.toggleRfiMask())? "Off" : "On "));
-}
-
-function update() {
-   index = ++index % num;
-   plot.update(data[index]);
-   d3.select("#tgXHairs").attr("value","X-Hairs "+((plot.isXHairsOn()) ? "Off" : "On "));
-   d3.select("#rfiMask").attr("value","RFI Mask "+((plot.isRfiMaskOn())? "Off" : "On "));
-   d3.select("#event").text(index+1);
-}
-
 
 function waterfallPlot(d3_AppendToElement,data) {
 
