@@ -27,6 +27,8 @@ function mkRandomWaterFallData () {
    // --------------------------------------------------------------
    // emulation
 
+   this.doCompactification_test = false;
+
    // This routines emulates how the data would come after it has been upacked.
    this.iMap = (function (xBins,xMin,xMax,yBins,yMin,yMax) {
       var data = [];
@@ -70,39 +72,49 @@ function mkRandomWaterFallData () {
          }
       }
       return {"xBins":xBins, "xMin":xMin, "xMax":xMax, "yBins":yBins, "yMin":yMin, "yMax":yMax, "data":data};
-   })(this.xBins,this.xMin,this.xMax,this.yBins,this.yMin,this.yMax);
-// TA-DO: Compatification Code: i.e., map 1024x256 -> 175x175
-//     (256,this.xMin,this.xMax,1024,this.yMin,this.yMax);
-//
-//   this.compactify = function (iMap,tgXBins,tgYBins) {
-//      if (iMap.xBins <= tgXBins || iMap.yBins <= tgYBins) {return iMap;}
-//      var tgCol = function (col) {return Math.floor((tgXBins-1)*col/(iMap.xBins-1));}
-//      var tgRow = function (row) {return Math.floor((tgYBins-1)*col/(iMap.yBins-1));}
-//      var xValue = function(bin) {return Number((iMap.xMax-iMap.xMin)*bin/tgXBins+iMap.xMin).toFixed(2);};
-//      var yValue = function(bin) {return Number((iMap.yMax-iMap.yMin)*bin/tgYBins+iMap.yMin).toFixed(2);};
-//      var tgData = [];
-//      var cnt = [];
-//      for (var row=0; row < tgYBins; row++) {
-//         for (var col=0; col < tgXBins; col++) {
-//            tgData[row*tgXBins+col] = {"x": xValue(col),"y": yValue(row),"jy": 0};
-//            cnt[row*tgXBins+col]=0;
-//         }
-//      }
-//      for (var row=0; row < iMap.yBins; row++) {
-//         for (var col=0; col < iMap.xBins; col++) {
-//            tgData[tgRow(row)*tgXBins+tgCol(col)].jy += iMap[row*iMap.xBins+col];
-//            cnt[tgRow(row)*tgXBins+tgCol(col)]+=1;
-//         }
-//      }
-//      for (var row=0; row < tgYBins; row++) {
-//         for (var col=0; col < tgXBins; col++) {
-//            tgData[row*tgXBins+col].jy /= (cnt[row*tgXBins+col]>0) ? cnt[row*tgXBins+col] : 1;
-//         }
-//      }
-//      return tgData; 
-//   }
-//
-//   this.data=this.compactify(this.iMap.data,this.xBins,this.yBins);
+   })((this.doCompactification_test)?256:this.xBins,this.xMin,this.xMax,(this.doCompactification_test)?1024:this.yBins,this.yMin,this.yMax);
+
+   // Compactification code, maps iMap.(xBins x yBins) -> (tgXBins x tgYBins) (e.g., 1024x256 -> 175x175),
+   // for fixed iMap.{xMin,xMax,yMin,yMax}.
+   // TA-DO: [1] Test corner cases.
+   //        [2] Figure out how to compactify the RFI mask... averaging and rounding doesn't work.
+   this.compactify = function (iMap,tgXBins,tgYBins) {
+      if (iMap.xBins <= tgXBins || iMap.yBins <= tgYBins) {return iMap;}
+      var tgCol = function (col) {return Math.floor((tgXBins-1)*col/(iMap.xBins-1));}
+      var tgRow = function (row) {return Math.floor((tgYBins-1)*row/(iMap.yBins-1));}
+      var xValue = function(bin) {return Number((iMap.xMax-iMap.xMin)*bin/tgXBins+iMap.xMin).toFixed(2);};
+      var yValue = function(bin) {return Number((iMap.yMax-iMap.yMin)*bin/tgYBins+iMap.yMin).toFixed(2);};
+      var tgData = [];
+      var cnt = [];
+      var idx = 0;
+      var tgIdx = 0;
+      for (var row=0; row < tgYBins; row++) {
+         for (var col=0; col < tgXBins; col++) {
+            tgIdx = row*tgXBins+col;
+            tgData[tgIdx] = {"x": xValue(col), "y": yValue(row), "jy": 0, "mask": 0};
+            cnt[tgIdx]=0;
+         }
+      }
+      for (var row=0; row < iMap.yBins; row++) {
+         for (var col=0; col < iMap.xBins; col++) {
+            tgIdx = tgRow(row)*tgXBins+tgCol(col); 
+            idx = row*iMap.xBins+col;
+            tgData[tgIdx].jy += Number(iMap.data[idx].jy);
+            //tgData[tgIdx].mask += Number(iMap.data[idx].mask);
+            tgData[tgIdx].mask = Number(iMap.data[idx].mask);
+            cnt[tgIdx]+=1;
+         }
+      }
+      for (var row=0; row < tgYBins; row++) {
+         for (var col=0; col < tgXBins; col++) {
+            tgIdx = row*tgXBins+col;
+            tgData[tgIdx].jy /= ((cnt[tgIdx]>0) ? cnt[tgIdx] : 1);
+            //tgData[tgIdx].mask = Math.round(tgData[tgIdx].mask/((cnt[tgIdx]>0) ? cnt[tgIdx] : 1));
+         }
+      }
+      return {"xBins":tgXBins, "xMin":iMap.xMin, "xMax":iMap.xMax, "yBins":tgYBins, "yMin":iMap.yMin, "yMax":iMap.yMax, "data":tgData}; 
+   }
+   this.iMap=this.compactify(this.iMap,this.xBins,this.yBins);
 
    // --------------------------------------------------------------
    // Display data...
