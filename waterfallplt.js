@@ -1,4 +1,9 @@
-// Copyright (c) 2017 Dr. Michelle M. M. Boyce
+// Waterfall Plotter Widget.
+//
+// Author: Dr. Michelle M. M. Boyce
+// Email: dr_smike@yahoo.ca
+// Stardate: -305869.6369228817
+//
 
 function waterfallPlot(d3_AppendToElement,data) {
 
@@ -11,13 +16,15 @@ function waterfallPlot(d3_AppendToElement,data) {
    this.gYBoxEdge = this.gMainEdge/this.wf.yBins; // Height of main area boxel 
 
    // svg container for waterfall plot
-   this.svgContainer = d3_AppendToElement.append("svg").attr("width",this.gMainEdge+this.gMiniEdge+75).attr("height",this.gMainEdge+this.gMiniEdge+75);
+   this.svgContainer = d3_AppendToElement.append("svg")
+      .attr("width",this.gMainEdge+this.gMiniEdge+75).attr("height",this.gMainEdge+this.gMiniEdge+75);
 
    // This is the main waterfall plot svg container, which can be used to scale the whole thing... 
    this.gWaterfallPlotContainer = this.svgContainer.append("g").attr("class","waterfall-plot");
 
    // Main waterfall plot area
-   this.gMainPlot = this.gWaterfallPlotContainer.append("g").attr("class","wf-main-plot").attr("transform","translate(25,"+(this.gMiniEdge+29)+")");
+   this.gMainPlot = this.gWaterfallPlotContainer.append("g").attr("class","wf-main-plot")
+      .attr("transform","translate(25,"+(this.gMiniEdge+29)+")");
    this.xScale = d3.scaleLinear().domain([this.wf.xMin,this.wf.xMax]).range([0,this.gMainEdge]);
    this.yScale = d3.scaleLinear().domain([this.wf.yMin,this.wf.yMax]).range([this.gMainEdge,0]);
    this.xAxis  = d3.axisBottom(this.xScale);
@@ -47,7 +54,8 @@ function waterfallPlot(d3_AppendToElement,data) {
       .attr("style","stroke:black;stroke-width:1");
    this.gTopPlot.append("line").attr("x1",this.gMainEdge).attr("y1",1).attr("x2",this.gMainEdge).attr("y2",this.gMiniEdge)
       .attr("style","stroke:black;stroke-width:1");
-   this.gTopPlot.append("text").attr("x",0).attr("y",0).attr("transform","translate(-7,"+((this.gMiniEdge+5)/2)+") rotate(-90)").text(this.wf.iLabel);
+   this.gTopPlot.append("text").attr("x",0).attr("y",0)
+      .attr("transform","translate(-7,"+((this.gMiniEdge+5)/2)+") rotate(-90)").text(this.wf.iLabel);
    (function(element,wf,xScale,uScale,gXBoxEdge){
       var topLineFunc = d3.line().x(function(d,i){return xScale(wf.xValue(i))+gXBoxEdge/2;}).y(function(d,i){return uScale(d);})
          .curve(d3.curveLinear);
@@ -76,9 +84,11 @@ function waterfallPlot(d3_AppendToElement,data) {
    })(this.gRightPlot,this.wf,this.rScale,this.yScale,this.gYBoxEdge);
 
    // Main plot area xhairs
-   this.gXHairs = this.gWaterfallPlotContainer.append("g").attr("class","main-xhairs").attr("transform","translate(52,"+(this.gMiniEdge+29)+")");
+   this.gXHairs = this.gWaterfallPlotContainer.append("g").attr("class","main-xhairs")
+      .attr("transform","translate(52,"+(this.gMiniEdge+29)+")");
    (function(element,gMainPlot,xScale,yScale,iScale,iLabel,gMainEdge,gMiniEdge,gXBoxEdge,gYBoxEdge){
-      element.append("rect").attr("class","main-xhairs-region xhairs").attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMainEdge+1)
+      element.append("rect").attr("class","main-xhairs-region xhairs")
+         .attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMainEdge+1)
       .attr("fill","none").style("pointer-events","all")
       .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
       .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
@@ -161,7 +171,8 @@ function waterfallPlot(d3_AppendToElement,data) {
    // Top graph xhairs
    this.gTopXHairs = this.gWaterfallPlotContainer.append("g").attr("class","top-xhairs").attr("transform","translate(52,29)");
    (function(element,xScale,uScale,gMainEdge,gMiniEdge){
-      element.append("rect").attr("class","main-xhairs-region xhairs").attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMiniEdge)
+      element.append("rect").attr("class","main-xhairs-region xhairs")
+         .attr("x",0).attr("y",0).attr("width",gMainEdge).attr("height",gMiniEdge)
          .attr("fill","none").style("pointer-events","all")
          .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
          .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
@@ -177,12 +188,14 @@ function waterfallPlot(d3_AppendToElement,data) {
             element.select(".top-y-xhairs-label").attr("y",yPixels).text(y>0?y:-y);
          });
    })(this.gTopXHairs,this.xScale,this.uScale,this.gMainEdge,this.gMiniEdge);
-   this.gTopXHairs.append("line").attr("class","top-x-xhairs").attr("x1",this.gMainEdge/2).attr("y1",0).attr("x2",this.gMainEdge/2).attr("y2",this.gMiniEdge)
+   this.gTopXHairs.append("line").attr("class","top-x-xhairs")
+      .attr("x1",this.gMainEdge/2).attr("y1",0).attr("x2",this.gMainEdge/2).attr("y2",this.gMiniEdge)
       .attr("stroke","black").attr("stroke-width",1).style("display","none");
    this.gTopXHairs.append("line").attr("class","top-x-xhairs")
       .attr("x1",this.gMainEdge/2).attr("y1",100).attr("x2",this.gMainEdge/2).attr("y2",this.gMainEdge+this.gMiniEdge)
       .attr("stroke","yellow").attr("stroke-width",1).style("display","none");
-   this.gTopXHairs.append("line").attr("class","top-y-xhairs").attr("x1",0).attr("y1",this.gMiniEdge/2).attr("x2",this.gMainEdge).attr("y2",this.gMiniEdge/2)
+   this.gTopXHairs.append("line").attr("class","top-y-xhairs")
+      .attr("x1",0).attr("y1",this.gMiniEdge/2).attr("x2",this.gMainEdge).attr("y2",this.gMiniEdge/2)
       .attr("stroke","black").attr("stroke-width",1).style("display","none");
    this.gTopXHairs.append("text").attr("class","top-x-xhairs-label").attr("x",this.gMainEdge/2).attr("y",-4)
       .style("text-anchor","middle").text(Number(this.xScale.invert(this.gMainEdge/2)).toFixed(1)).style("display","none");
@@ -193,7 +206,8 @@ function waterfallPlot(d3_AppendToElement,data) {
    this.gRightXHairs = this.gWaterfallPlotContainer.append("g")
       .attr("class","top-xhairs").attr("transform","translate("+(this.gMainEdge+51)+","+(this.gMiniEdge+28)+")");
    (function(element,rScale,yScale,gMainEdge,gMiniEdge){
-      element.append("rect").attr("class","main-xhairs-region xhairs").attr("x",0).attr("y",0).attr("width",gMiniEdge).attr("height",gMainEdge)
+      element.append("rect").attr("class","main-xhairs-region xhairs")
+      .attr("x",0).attr("y",0).attr("width",gMiniEdge).attr("height",gMainEdge)
       .attr("fill","none").style("pointer-events","all")
       .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
       .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
@@ -247,7 +261,8 @@ function waterfallPlot(d3_AppendToElement,data) {
    // Function to update waterfall plot data areas (i.e., it assumes no scale changes).
    this.update = function (wf) {
       // Update main plot area
-      this.gMainPlot.selectAll("rect").data(wf.data).style("fill",function(d){return (d.mask && wf.rfiMaskOn) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
+      this.gMainPlot.selectAll("rect").data(wf.data)
+         .style("fill",function(d){return (d.mask && wf.rfiMaskOn) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
 
       // Update top plot area
       var topLineFunc = (function (xScale,uScale,gXBoxEdge) {
@@ -272,7 +287,8 @@ function waterfallPlot(d3_AppendToElement,data) {
    // Function to toogle rfi mask on/off.
    this.toggleRfiMask = function() {
       if (this.wf.rfiMaskOn != true) { 
-         this.gMainPlot.selectAll("rect").data(this.wf.data).style("fill",function(d){return (d.mask) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
+         this.gMainPlot.selectAll("rect").data(this.wf.data)
+         .style("fill",function(d){return (d.mask) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
          this.wf.rfiMaskOn = true;
       } else {
          this.gMainPlot.selectAll("rect").data(this.wf.data).style("fill",function(d){return d3.rgb(d.jy,d.jy,d.jy).toString();});
