@@ -83,6 +83,13 @@ function waterfallPlot(d3_AppendToElement,data) {
          .attr("stroke","black").attr("stroke-width",1).attr("fill","none");
    })(this.gRightPlot,this.wf,this.rScale,this.yScale,this.gYBoxEdge);
 
+   // This is tempory fix for chrome, i.e., the (x,y) values on mousemove bounce around when 
+   // the mouse is not moving. The appears to have happened with a recenct upgrade. It's not
+   // 100% perfect, but good enough for now...
+   var kludge = function(num) { 
+      return Number(num/10).toFixed(0)*10; 
+   }
+
    // Main plot area xhairs
    this.gXHairs = this.gWaterfallPlotContainer.append("g").attr("class","main-xhairs")
       .attr("transform","translate(52,"+(this.gMiniEdge+29)+")");
@@ -103,6 +110,8 @@ function waterfallPlot(d3_AppendToElement,data) {
          gMainPlot.select("g.xy-main-plot").selectAll("rect")
             .filter(function(d){
                if (xScale(d.x)<=xPixels && xPixels <= xScale(d.x)+gXBoxEdge && yScale(d.y)-gYBoxEdge<=yPixels && yPixels <= yScale(d.y)) {
+                  xPixels = kludge(xPixels);
+                  yPixels = kludge(yPixels);
 
                   // OK, we found the rectangle under the mouse arrow, now we can get intensity value to
                   // annotate our x-hairs. That said, we must make sure the annotation remains in the
@@ -180,8 +189,10 @@ function waterfallPlot(d3_AppendToElement,data) {
             var coords = d3.mouse(this);
             var xPixels = coords[0];
             var yPixels = coords[1];
-            var x = Number(xScale.invert(xPixels)).toFixed(1);
-            var y = Number(uScale.invert(yPixels)).toFixed(1);
+            var x = Number(xScale.invert(xPixels)).toFixed(2);
+            var y = Number(uScale.invert(yPixels)).toFixed(2);
+            xPixels = kludge(xPixels);
+            yPixels = kludge(yPixels);
             element.selectAll(".top-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
             element.select(".top-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
             element.select(".top-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
@@ -207,22 +218,24 @@ function waterfallPlot(d3_AppendToElement,data) {
       .attr("class","top-xhairs").attr("transform","translate("+(this.gMainEdge+51)+","+(this.gMiniEdge+28)+")");
    (function(element,rScale,yScale,gMainEdge,gMiniEdge){
       element.append("rect").attr("class","main-xhairs-region xhairs")
-      .attr("x",0).attr("y",0).attr("width",gMiniEdge).attr("height",gMainEdge)
-      .attr("fill","none").style("pointer-events","all")
-      .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
-      .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
-      .on("mousemove", function() {
-         var coords = d3.mouse(this);
-         var xPixels = coords[0];
-         var yPixels = coords[1];
-         var x = Number(rScale.invert(xPixels)).toFixed(1);
-         var y = Number(yScale.invert(yPixels)).toFixed(1);
-         element.select(".right-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
-         element.selectAll(".right-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
-         element.select(".right-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
-         element.select(".right-y-xhairs-label")
-           .attr("transform","translate("+(gMiniEdge+4)+","+yPixels+") rotate(90)").text(y>0?y:-y);
-       });
+         .attr("x",0).attr("y",0).attr("width",gMiniEdge).attr("height",gMainEdge)
+         .attr("fill","none").style("pointer-events","all")
+         .on("mouseover",function(){element.selectAll("line, text").style("display",null);})
+         .on("mouseout", function(){element.selectAll("line, text").style("display","none");})
+         .on("mousemove", function() {
+            var coords = d3.mouse(this);
+            var xPixels = coords[0];
+            var yPixels = coords[1];
+            var x = Number(rScale.invert(xPixels)).toFixed(1);
+            var y = Number(yScale.invert(yPixels)).toFixed(1);
+            xPixels = kludge(xPixels);
+            yPixels = kludge(yPixels);
+            element.select(".right-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
+            element.selectAll(".right-y-xhairs").attr("y1",yPixels).attr("y2",yPixels);
+            element.select(".right-x-xhairs-label").attr("x",xPixels).text(x>0?x:-x);
+            element.select(".right-y-xhairs-label")
+              .attr("transform","translate("+(gMiniEdge+4)+","+yPixels+") rotate(90)").text(y>0?y:-y);
+         });
    })(this.gRightXHairs,this.rScale,this.yScale,this.gMainEdge,this.gMiniEdge);
    this.gRightXHairs.append("line").attr("class","right-x-xhairs")
       .attr("x1",this.gMiniEdge/2).attr("y1",0).attr("x2",this.gMiniEdge/2).attr("y2",this.gMainEdge)
