@@ -112,6 +112,13 @@ function waterfallPlot(d3_AppendToElement,data) {
                if (xScale(d.x)<=xPixels && xPixels <= xScale(d.x)+gXBoxEdge && yScale(d.y)-gYBoxEdge<=yPixels && yPixels <= yScale(d.y)) {
                   xPixels = kludge(xPixels);
                   yPixels = kludge(yPixels);
+                  //curXPos = Number(element.select(".main-x-xhairs").attr("x1"));
+                  //var curYPos = Number(element.select(".main-y-xhairs").attr("y1"));
+                  //var delta = Math.sqrt(Math.pow(xPixels-curXPos,2)+Math.pow(yPixels-curYPos,2));
+                  //console.log("curXPos="+curXPos+", curYPos="+curYPos+", xPixels="+xPixels+", yPixels="+yPixels+", delta="+delta);
+                  //if (Math.abs(xPixels-curXPos) < 10 && Math.abs(yPixels-curYPos) < 10) {
+                  //   return true;
+                  //}
 
                   // OK, we found the rectangle under the mouse arrow, now we can get intensity value to
                   // annotate our x-hairs. That said, we must make sure the annotation remains in the
