@@ -103,8 +103,8 @@ function waterfallPlot(d3_AppendToElement,data) {
          var coords = d3.mouse(this);
          var xPixels = coords[0];
          var yPixels = coords[1];
-         var x = Number(xScale.invert(xPixels)).toFixed(1);
-         var y = Number(yScale.invert(yPixels)).toFixed(1);
+         var x = Number(xScale.invert(xPixels)).toFixed(2);
+         var y = Number(yScale.invert(yPixels)).toFixed(0);
 
          // Update x-hairs and annotation.
          gMainPlot.select("g.xy-main-plot").selectAll("rect")
@@ -190,7 +190,7 @@ function waterfallPlot(d3_AppendToElement,data) {
             var xPixels = coords[0];
             var yPixels = coords[1];
             var x = Number(xScale.invert(xPixels)).toFixed(2);
-            var y = Number(uScale.invert(yPixels)).toFixed(2);
+            var y = Number(uScale.invert(yPixels)).toFixed(1);
             xPixels = kludge(xPixels);
             yPixels = kludge(yPixels);
             element.selectAll(".top-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
@@ -227,7 +227,7 @@ function waterfallPlot(d3_AppendToElement,data) {
             var xPixels = coords[0];
             var yPixels = coords[1];
             var x = Number(rScale.invert(xPixels)).toFixed(1);
-            var y = Number(yScale.invert(yPixels)).toFixed(1);
+            var y = Number(yScale.invert(yPixels)).toFixed(0);
             xPixels = kludge(xPixels);
             yPixels = kludge(yPixels);
             element.select(".right-x-xhairs").attr("x1",xPixels).attr("x2",xPixels);
