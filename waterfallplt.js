@@ -27,7 +27,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       .attr("transform","translate(25,"+(this.gMiniEdge+29)+")");
    this.xScale = d3.scaleLinear().domain([this.wf.xMin,this.wf.xMax]).range([0,this.gMainEdge]);
    this.yScale = d3.scaleLinear().domain([this.wf.yMin,this.wf.yMax]).range([this.gMainEdge,0]);
-   this.xAxis  = d3.axisBottom(this.xScale);
+   this.xAxis  = d3.axisBottom(this.xScale).ticks(5);
    this.yAxis  = d3.axisLeft(this.yScale);
    this.iScale = d3.scaleLinear().domain([0,255]).range([0,1]);
    this.gMainPlot.append("g").attr("class","x-axis").attr("transform","translate(25,"+this.gMainEdge+")").call(this.xAxis);
