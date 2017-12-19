@@ -195,13 +195,13 @@ function waterfallPlot(d3_AppendToElement,data) {
    })(this.gXHairs,this.gMainPlot,this.xScale,this.yScale,this.iScale,this.wf.iLabel,this.gMainEdge,this.gMiniEdge,this.gXBoxEdge,this.gYBoxEdge); 
    this.gXHairs.append("line").attr("class","main-x-xhairs")
       .attr("x1",this.gMainEdge/2).attr("y1",0).attr("x2",this.gMainEdge/2).attr("y2",this.gMainEdge)
-      .attr("stroke","yellow").attr("stroke-width",1).style("display","none");
+      .attr("stroke","#f4d03f").attr("stroke-width",1).style("display","none");
    this.gXHairs.append("line").attr("class","main-x-xhairs")
       .attr("x1",this.gMainEdge/2).attr("y1",-(this.gMiniEdge-1)).attr("x2",this.gMainEdge/2).attr("y2",0)
       .attr("stroke","black").attr("stroke-width",1).style("display","none");
    this.gXHairs.append("line").attr("class","main-y-xhairs")
       .attr("x1",0).attr("y1",this.gMainEdge/2).attr("x2",this.gMainEdge).attr("y2",this.gMainEdge/2)
-      .attr("stroke","yellow").attr("stroke-width",1).style("display","none");
+      .attr("stroke","#f4d03f").attr("stroke-width",1).style("display","none");
    this.gXHairs.append("line").attr("class","main-y-xhairs")
       .attr("x1",this.gMainEdge).attr("y1",this.gMainEdge/2).attr("x2",this.gMainEdge+this.gMiniEdge).attr("y2",this.gMainEdge/2)
       .attr("stroke","black").attr("stroke-width",1).style("display","none");
@@ -211,7 +211,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       .style("text-anchor","middle").text(Number(this.yScale.invert(this.gMainEdge/2)).toFixed(1))
       .attr("transform","translate("+(this.gMainEdge+this.gMiniEdge+5)+","+(this.gMainEdge/2)+") rotate(90)").style("display","none");
    this.gXHairs.append("text").attr("class","main-z-xhairs").attr("x",this.gMainEdge/2).attr("y",this.gMainEdge/2).text("0")
-      .style("fill","yellow").style("display","none");
+      .style("fill","#f4d03f").style("display","none");
 
    // Top graph xhairs
    this.gTopXHairs = this.gWaterfallPlotContainer.append("g").attr("class","top-xhairs").attr("transform","translate(52,29)");
@@ -240,7 +240,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       .attr("stroke","black").attr("stroke-width",1).style("display","none");
    this.gTopXHairs.append("line").attr("class","top-x-xhairs")
       .attr("x1",this.gMainEdge/2).attr("y1",100).attr("x2",this.gMainEdge/2).attr("y2",this.gMainEdge+this.gMiniEdge)
-      .attr("stroke","yellow").attr("stroke-width",1).style("display","none");
+      .attr("stroke","#f4d03f").attr("stroke-width",1).style("display","none");
    this.gTopXHairs.append("line").attr("class","top-y-xhairs")
       .attr("x1",0).attr("y1",this.gMiniEdge/2).attr("x2",this.gMainEdge).attr("y2",this.gMiniEdge/2)
       .attr("stroke","black").attr("stroke-width",1).style("display","none");
@@ -281,7 +281,7 @@ function waterfallPlot(d3_AppendToElement,data) {
       .attr("stroke","black").attr("stroke-width",1).style("display","none");
    this.gRightXHairs.append("line").attr("class","right-y-xhairs")
       .attr("x1",-this.gMainEdge).attr("y1",this.gMainEdge/2).attr("x2",0).attr("y2",this.gMainEdge/2)
-      .attr("stroke","yellow").attr("stoke-width",1).style("display","none");
+      .attr("stroke","#f4d03f").attr("stoke-width",1).style("display","none");
    this.gRightXHairs.append("text").attr("class","right-x-xhairs-label").attr("x",54).attr("y",this.gMainEdge+4)
       .style("alignment-baseline","hanging").text(Number(this.rScale.invert(this.gMiniEdge/2)).toFixed(1)).style("display","none");
    this.gRightXHairs.append("text").attr("class","right-y-xhairs-label").attr("x",0).attr("y",0)
