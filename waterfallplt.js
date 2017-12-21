@@ -9,7 +9,7 @@ function waterfallPlot(d3_AppendToElement,data) {
 
    this.wf = data;
 
-   color_map = (function(iMin,iMax) {
+   var color_map = (function(iMin,iMax) {
       return function(v) {
          var viridis = [
             '#440154','#440255','#440357','#450558','#45065a','#45085b','#46095c','#460b5e','#460c5f','#460e61','#470f62','#471163',
@@ -40,7 +40,6 @@ function waterfallPlot(d3_AppendToElement,data) {
          return viridis[Math.round(v_map) % len];
       }
    })(this.wf.iMin,this.wf.iMax);
-   console.log('iMin='+this.wf.iMin+', iMax='+this.wf.iMax);
 
    // geometric parameters (pixels)
    this.gMainEdge = 400; // Main plot area is square 
