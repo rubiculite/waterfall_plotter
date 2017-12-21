@@ -69,7 +69,8 @@ function waterfallPlot(d3_AppendToElement,data) {
       .attr("style","stroke:black;stroke-width:1");
    this.gMainPlot.append("line").attr("x1",this.gMainEdge+26).attr("y1",0).attr("x2",this.gMainEdge+26).attr("y2",this.gMainEdge)
       .attr("style","stroke:black;stroke-width:1");
-   this.gMainPlot.append("text").attr("x",this.gMainEdge+7).attr("y",this.gMainEdge+30).text(this.wf.xLabel);
+   //this.gMainPlot.append("text").attr("x",this.gMainEdge+7).attr("y",this.gMainEdge+30).text(this.wf.xLabel);
+   this.gMainPlot.append("text").attr("x",this.gMainEdge-5*this.wf.xLabel.length).attr("y",this.gMainEdge+32).text(this.wf.xLabel);
    this.gMainPlot.append("text").attr("x",0).attr("y",0).attr("transform","translate(-7,35) rotate(-90)").text(this.wf.yLabel);
    (function(element,xScale,yScale,wf,gXBoxEdge,gYBoxEdge){
       element.append("g").attr("class","xy-main-plot").attr("transform","translate(26,"+(-gYBoxEdge)+")")
