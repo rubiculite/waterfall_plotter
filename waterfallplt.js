@@ -317,7 +317,7 @@ function waterfallPlot(d3_AppendToElement,data) {
    this.update = function (wf) {
       // Update main plot area
       this.gMainPlot.selectAll("rect").data(wf.data)
-         .style("fill",function(d){return (d.mask && wf.rfiMaskOn) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
+         .style("fill",function(d){return (d.mask && wf.rfiMaskOn) ? "red" : color_map(d.jy);});
 
       // Update top plot area
       var topLineFunc = (function (xScale,uScale,gXBoxEdge) {
@@ -343,10 +343,10 @@ function waterfallPlot(d3_AppendToElement,data) {
    this.toggleRfiMask = function() {
       if (this.wf.rfiMaskOn != true) { 
          this.gMainPlot.selectAll("rect").data(this.wf.data)
-         .style("fill",function(d){return (d.mask) ? "red" : d3.rgb(d.jy,d.jy,d.jy).toString();});
+         .style("fill",function(d){return (d.mask) ? "red" : color_map(d.jy);});
          this.wf.rfiMaskOn = true;
       } else {
-         this.gMainPlot.selectAll("rect").data(this.wf.data).style("fill",function(d){return d3.rgb(d.jy,d.jy,d.jy).toString();});
+         this.gMainPlot.selectAll("rect").data(this.wf.data).style("fill",function(d){return color_map(d.jy);});
          this.wf.rfiMaskOn = false;
       }
       return this.wf.rfiMaskOn;
