@@ -12,7 +12,7 @@ Fig. 1: Waterfall Plotter widget showing X-hairs.
 
 ## Testing
 
-Works OK in Chrome, Microsoft Edge, and Safari. It renders in Firefox, but the X-Hairs do not function.
+Works on Chrome, Firefox, Microsoft Edge, and Safari.
 
 ## Features
 * Fast Data Load
