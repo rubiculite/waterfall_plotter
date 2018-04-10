@@ -156,19 +156,20 @@ function mkRandomWaterFallData () {
    })(this.xBins,this.yBins,this.data);
 
    // compute min intensity
-   this.iMin = (function(xBins,yBins,data) {
-      var intensity = parseFloat(data[0].jy);
-      var iMin = intensity;
-      for (var row=0; row < yBins; row++) {
-         for (var col=0; col < xBins; col++) {
-             intensity = parseFloat(data[row*xBins+col].jy);
-             if (iMin > intensity) {
-                iMin = intensity;
-             }
-         }
-      }
-      return iMin;
-   })(this.xBins,this.yBins,this.data);
+   /* this.iMin = (function(xBins,yBins,data) {
+    *   var intensity = parseFloat(data[0].jy);
+    *   var iMin = intensity;
+    *   for (var row=0; row < yBins; row++) {
+    *      for (var col=0; col < xBins; col++) {
+    *          intensity = parseFloat(data[row*xBins+col].jy);
+    *          if (iMin > intensity) {
+    *             iMin = intensity;
+    *          }
+    *      }
+    *   }
+    *   return iMin;
+    *  })(this.xBins,this.yBins,this.data);
+    */
 
    // compute max intensity
    this.iMax = (function(xBins,yBins,data) {
