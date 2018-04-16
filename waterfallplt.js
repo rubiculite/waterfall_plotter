@@ -42,7 +42,7 @@ function waterfallPlot(d3_AppendToElement,data, size) {
    })(this.wf.iMin,this.wf.iMax);
 
    // geometric parameters (pixels)
-   console.log(isNaN(size));
+   //console.log(isNaN(size));
    if (isNaN(size)) {
       this.gMainEdge = 400; // Main plot area is square 
    } else {
