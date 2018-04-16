@@ -5,7 +5,7 @@
 // Stardate: -305869.6369228817
 //
 
-function waterfallPlot(d3_AppendToElement,data) {
+function waterfallPlot(d3_AppendToElement,data, size) {
 
    this.wf = data;
 
@@ -42,7 +42,12 @@ function waterfallPlot(d3_AppendToElement,data) {
    })(this.wf.iMin,this.wf.iMax);
 
    // geometric parameters (pixels)
-   this.gMainEdge = 400; // Main plot area is square 
+   console.log(isNaN(size));
+   if (isNaN(size)) {
+      this.gMainEdge = 400; // Main plot area is square 
+   } else {
+      this.gMainEdge = size;
+   }
    this.gMiniEdge = this.gMainEdge/4; // Small-edge length of side plots
    this.gXBoxEdge = this.gMainEdge/this.wf.xBins; // Width of main plot area boxel
    this.gYBoxEdge = this.gMainEdge/this.wf.yBins; // Height of main area boxel 
