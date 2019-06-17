@@ -1,6 +1,6 @@
 # Waterfall Plotter
 
-Working example: http://drmichelleboyce.net/waterfallplt/index.html
+Working example: http://drmichelleboyce.net/libs/waterfallplt/index.html
 
 Here I am building a d3.js (Version 4) based Waterfall Plotter widget. Waterfall plots are used in Radio Astronomy for studying various objects, such as, Pulsars, Rotating Radio Transients (RRATs), Fast Radio Bursts (FRBs), etc.
 
